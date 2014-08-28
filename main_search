@@ -1,0 +1,48 @@
+#-------------------------------------------------------------------------------
+# Name:        module1
+# Purpose:
+#
+# Author:      james.frick
+#
+# Created:     28/08/2014
+# Copyright:   (c) james.frick 2014
+# Licence:     <your licence>
+#-------------------------------------------------------------------------------
+
+import urllib2
+import csv
+import time
+
+
+
+def main():
+    user_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0'
+    headers={'User-Agent':user_agent,}
+    with open('word_list.csv', 'rb') as csvfile:
+        my_reader=csv.reader(csvfile,delimiter = ",")
+        literal_dictionary = {}
+        for row in my_reader:
+            word=row[0]
+            url = "http://google.com/search?q="+word+"&num=1"
+            out_http=query(url,headers)
+            definition = trim(out_http)
+            literal_dictionary[word] = definition
+    print literal_dictionary
+    f=literal_dictionary.return_a_dictionary.keys()
+    with open('definitions.csv', 'wb') as csvfile2:
+        my_writer = csv.dictwriter(csvfile2,fieldnames=f)
+        my_writer.writerows(literal_dictionary)
+
+def query (url,headers):
+    request=urllib2.Request(url,None,headers)
+    response = urllib2.urlopen(request)
+    return response.read()
+
+def trim(out_http):
+    def_index_1 = out_http.find('data-dobid="dfn"')
+    temp = out_http[def_index_1:]
+    temp2 = temp[temp.find("<span>")+6:temp.find("</span>")]
+    return temp2
+
+if __name__ == '__main__':
+    main()
